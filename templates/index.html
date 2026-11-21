@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockchain File Integrity Verification System</title>
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="dark-theme">
+    <!-- Top Navigation Bar -->
+    <header class="navbar" id="home">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <div class="brand-logo">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-title">BlockIntegrity</span>
+                    <span class="brand-badge">SHA-256 Ledger</span>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="nav-links">
+                <a href="#home" class="nav-item active">Home</a>
+                <a href="#upload-section" class="nav-item">Upload File</a>
+                <a href="#verify-section" class="nav-item">Verify File</a>
+                <a href="#records-section" class="nav-item">Blockchain Records</a>
+            </nav>
+
+            <!-- Chain Health Badge & Validator Button -->
+            <div class="nav-actions">
+                <button id="validate-chain-btn" class="chain-status-pill status-loading" title="Click to check blockchain validity">
+                    <span class="pulse-indicator"></span>
+                    <span id="nav-chain-status">Validating Ledger...</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-wrapper">
+        <!-- Hero Section -->
+        <section class="hero-banner">
+            <div class="hero-content">
+                <div class="hero-pill">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                    Tamper-Proof File Integrity System
+                </div>
+                <h1 class="hero-title">Decentralized File Verification Using Custom Blockchain</h1>
+                <p class="hero-subtitle">
+                    Compute SHA-256 digital fingerprints, record permanent proof into custom mined blocks, and verify documents against cryptographic ledger records.
+                </p>
+            </div>
+        </section>
+
+        <!-- Stats Overview Cards -->
+        <section class="stats-row">
+            <div class="stat-card">
+                <div class="stat-icon-wrapper blue-glow">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Total Blocks</span>
+                    <span class="stat-number" id="stat-total-blocks">-</span>
+                    <span class="stat-desc">Genesis + Mined Blocks</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon-wrapper cyan-glow">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="4 17 10 11 4 5"></polyline>
+                        <line x1="12" y1="19" x2="20" y2="19"></line>
+                    </svg>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Hashing Algorithm</span>
+                    <span class="stat-number text-cyan">SHA-256</span>
+                    <span class="stat-desc">256-bit One-Way Digest</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon-wrapper purple-glow">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Proof of Work</span>
+                    <span class="stat-number">Difficulty 2</span>
+                    <span class="stat-desc">Target Prefix: <code>00</code></span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon-wrapper green-glow">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Blockchain Status</span>
+                    <span class="stat-number text-emerald" id="stat-chain-status">Verified</span>
+                    <span class="stat-desc" id="stat-chain-msg">Ledger Intact & Valid</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Interactive Actions Grid -->
+        <div class="interactive-grid">
+            <!-- ========================================== -->
+            <!-- CARD 1: Upload File & Store in Blockchain -->
+            <!-- ========================================== -->
+            <section class="card action-panel" id="upload-section">
+                <div class="panel-header">
+                    <div class="header-icon-box icon-upload">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="panel-title">Upload & Register Document</h2>
+                        <p class="panel-subtitle">Generate SHA-256 fingerprint & permanently store in blockchain block.</p>
+                    </div>
+                </div>
+
+                <!-- Drag & Drop Zone -->
+                <div class="drop-zone" id="upload-dropzone">
+                    <input type="file" id="upload-file-input" class="hidden-file-input" accept=".pdf,.txt,.jpg,.jpeg,.png,.docx">
+                    <div class="drop-content">
+                        <div class="drop-icon">
+                            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="12" y1="18" x2="12" y2="12"></line>
+                                <line x1="9" y1="15" x2="12" y2="12"></line>
+                                <line x1="15" y1="15" x2="12" y2="12"></line>
+                            </svg>
+                        </div>
+                        <p class="drop-heading">Drag and drop document here</p>
+                        <p class="drop-sub">or <span class="browse-link">browse from computer</span></p>
+                        <div class="file-badges">
+                            <span class="fmt-pill">PDF</span>
+                            <span class="fmt-pill">TXT</span>
+                            <span class="fmt-pill">DOCX</span>
+                            <span class="fmt-pill">JPG</span>
+                            <span class="fmt-pill">PNG</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- File Info Pill (Shown when file is selected) -->
+                <div class="file-preview-card hidden" id="upload-file-preview">
+                    <div class="preview-icon">📄</div>
+                    <div class="preview-details">
+                        <div class="preview-name" id="upload-filename-text">-</div>
+                        <div class="preview-size" id="upload-filesize-text">-</div>
+                    </div>
+                    <button type="button" class="btn-clear" id="upload-clear-btn" title="Remove selected file">✕</button>
+                </div>
+
+                <!-- Action Buttons: Generate SHA-256 & Store in Blockchain -->
+                <div class="button-row">
+                    <button type="button" id="btn-generate-hash" class="btn btn-outline" disabled>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="4 17 10 11 4 5"></polyline>
+                            <line x1="12" y1="19" x2="20" y2="19"></line>
+                        </svg>
+                        <span>Generate SHA-256 Hash</span>
+                        <div class="spinner hidden" id="hash-spinner"></div>
+                    </button>
+
+                    <button type="button" id="btn-store-blockchain" class="btn btn-primary" disabled>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                        </svg>
+                        <span>Store in Blockchain</span>
+                        <div class="spinner hidden" id="store-spinner"></div>
+                    </button>
+                </div>
+
+                <!-- Generated Hash & Storage Result Display -->
+                <div id="upload-output-area" class="output-area hidden"></div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- CARD 2: Verify File Integrity -->
+            <!-- ========================================== -->
+            <section class="card action-panel" id="verify-section">
+                <div class="panel-header">
+                    <div class="header-icon-box icon-verify">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="panel-title">Verify File Integrity</h2>
+                        <p class="panel-subtitle">Test any file against existing blockchain records to detect tampering.</p>
+                    </div>
+                </div>
+
+                <!-- Drag & Drop Zone for Verification -->
+                <div class="drop-zone" id="verify-dropzone">
+                    <input type="file" id="verify-file-input" class="hidden-file-input" accept=".pdf,.txt,.jpg,.jpeg,.png,.docx">
+                    <div class="drop-content">
+                        <div class="drop-icon">
+                            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                        </div>
+                        <p class="drop-heading">Drag file here to test integrity</p>
+                        <p class="drop-sub">or <span class="browse-link">browse from computer</span></p>
+                        <div class="file-badges">
+                            <span class="fmt-pill">Instant SHA-256 Check</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Verify File Preview -->
+                <div class="file-preview-card hidden" id="verify-file-preview">
+                    <div class="preview-icon">🔍</div>
+                    <div class="preview-details">
+                        <div class="preview-name" id="verify-filename-text">-</div>
+                        <div class="preview-size" id="verify-filesize-text">-</div>
+                    </div>
+                    <button type="button" class="btn-clear" id="verify-clear-btn" title="Remove selected file">✕</button>
+                </div>
+
+                <!-- Record Selector Dropdown -->
+                <div class="form-group select-wrapper">
+                    <label for="verify-record-select" class="field-label">Compare with Record:</label>
+                    <select id="verify-record-select" class="custom-select">
+                        <option value="">-- Auto-Search All Blockchain Records --</option>
+                    </select>
+                </div>
+
+                <!-- Verify Button -->
+                <button type="button" id="btn-verify-file" class="btn btn-secondary" disabled>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                    <span>Verify File Integrity</span>
+                    <div class="spinner hidden" id="verify-spinner"></div>
+                </button>
+
+                <!-- Verification Output Display -->
+                <div id="verify-output-area" class="output-area hidden"></div>
+            </section>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SECTION 3: Blockchain Records Explorer -->
+        <!-- ========================================== -->
+        <section class="card ledger-panel" id="records-section">
+            <div class="ledger-header-row">
+                <div class="ledger-title-group">
+                    <div class="header-icon-box icon-ledger">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="panel-title">Blockchain Records Ledger</h2>
+                        <p class="panel-subtitle">Sequential, immutable cryptographic records stored locally in JSON</p>
+                    </div>
+                </div>
+
+                <div class="ledger-controls">
+                    <button id="btn-validate-ledger" class="btn btn-sm btn-outline" title="Verify cryptographic linkage of all blocks">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        <span>Validate Chain</span>
+                    </button>
+                    <button id="btn-refresh-records" class="btn btn-sm btn-primary" title="Fetch latest blockchain records">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 4 23 10 17 10"></polyline>
+                            <polyline points="1 20 1 14 7 14"></polyline>
+                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                        </svg>
+                        <span>Refresh Records</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Blockchain Blocks List -->
+            <div id="blockchain-list-container" class="blockchain-timeline">
+                <div class="loading-state">
+                    <div class="spinner large"></div>
+                    <p>Loading blockchain ledger records...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div class="footer-content">
+                <p><strong>Blockchain-Based File Integrity Verification System</strong> • College Mini Project</p>
+                <p class="footer-sub">Implemented with Python, Flask, SHA-256 Hashing, Proof of Work, and Local JSON Ledger.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Notification Toast Element -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
